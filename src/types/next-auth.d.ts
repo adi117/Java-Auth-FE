@@ -21,9 +21,18 @@ declare module "next-auth" {
   }
 
   interface User {
-    roles: string[]
-    userID: number,
-    token: UserTokenDetails
+    roles: string[];
+    userID: number;
+    token: {
+      accessToken: {
+        claims: TokenClaims;
+        value: string;
+      };
+      refreshToken?: {
+        claims: TokenClaims;
+        value: string;
+      };
+    };
   }
 }
 
@@ -33,7 +42,11 @@ declare module "next-auth/jwt" {
     accessToken: {
       claims: TokenClaims
       value: string
-    }
+    },
+    refreshToken?: {
+      claims: TokenClaims;
+      value: string;
+    },
     error?: string
   }
 }

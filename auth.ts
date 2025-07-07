@@ -1,11 +1,12 @@
-import NextAuth, { User } from "next-auth";
+import NextAuth, { Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
-import jwt from "jsonwebtoken";
-import { LoginResponse, TokenClaims } from "@/types/auth/TokenPair";
 import { jwtDecode } from "jwt-decode";
+import { LoginResponse, TokenClaims } from "./src/types/auth/TokenPair";
+import { JWT } from "next-auth/jwt";
 
-export default NextAuth({
+// Define config first
+export const authConfig = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -15,48 +16,34 @@ export default NextAuth({
       },
       async authorize(credentials) {
         try {
+          const { email, password } = credentials as {
+            email: string;
+            password: string;
+          };
 
-          const {email, password} = credentials as {email: string; password: string}
-
-          const response = await axios.post("", {
-            email,password
+          const response = await axios.post("http://localhost:8080/api/v1/public/auth/login", {
+            email,
+            password,
           });
 
           const { data } = response.data as LoginResponse;
 
-          const secret = process.env.JWT_SECRET;
-          if (!secret) {
-            console.error("JWT secret not set");
-            return null;
-          }
-
-          try {
-            jwt.verify(data.accessToken.value, secret);
-          } catch (err) {
-            console.error("JWT verification failed: ", err);
-            return null;
-          }
-
           const decodedToken = jwtDecode<TokenClaims>(data.accessToken.value);
 
-          const { sub, scope, userId } = decodedToken;
-
-          const parsedResponse: User = {
-            id: userId,
-            email: sub,
+          return {
+            id: decodedToken.userId,
+            email: decodedToken.sub,
             token: {
               accessToken: {
                 claims: decodedToken,
                 value: data.accessToken.value,
               },
             },
-            roles: scope.split(" "),
-            userID: parseInt(userId),
+            roles: decodedToken.scope.split(" "),
+            userID: parseInt(decodedToken.userId),
           };
-
-          return parsedResponse ?? null;
         } catch (err) {
-          console.error("Login error", err);
+          console.error("Login error in authorize():", err);
           return null;
         }
       },
@@ -64,35 +51,30 @@ export default NextAuth({
   ],
 
   callbacks: {
+    async jwt({ token, user }: {token: JWT, user: User}) {
+      if (user) {
+        token.accessToken = user.token.accessToken;
+        token.roles = user.roles;
+        token.userID = user.userID;
+      }
+      return token;
+    },
 
-    async session({session, token}) {
+    async session({ session, token }: {session: Session, token: JWT}) {
       session.accessToken = token.accessToken.value;
       session.user = {
         ...session.user,
         roles: token.roles,
-        id: token.accessToken.claims.userId
-      }
+        id: token.accessToken.claims.userId,
+      };
       return session;
     },
-
-    async jwt({ token, user }) {
-      if (user) {
-        token = {
-          accessToken: {
-            claims: user.token.accessToken.claims,
-            value: user.token.accessToken.value,
-          },
-          roles: user.roles,
-          userID: user.id,
-        };
-      }
-
-      return token;
-    },
-
-    async signIn({ user }) {
-      console.log("IN SIGNIN CALLBACK: ", user);
-      return true;
-    },
   },
-});
+
+  secret: process.env.JWT_SECRET, // Make sure it's set in `.env.local`
+};
+
+// Now export handlers for App Router API route
+const { handlers, auth } = NextAuth(authConfig);
+
+export { handlers, auth };
