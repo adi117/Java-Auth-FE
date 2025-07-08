@@ -1,7 +1,8 @@
 import { JwtPayload } from "jwt-decode";
 
 export interface Tokenpair {
-  accessToken: string
+  accessToken: string,
+  refreshToken: string
 }
 
 export interface Token {
@@ -23,6 +24,7 @@ interface TokenWithValue {
 
 export interface LoginResponse {
   data: {
-    accessToken: TokenWithValue
+    accessToken: TokenWithValue,
+    refreshToken: TokenWithValue
   }
 }

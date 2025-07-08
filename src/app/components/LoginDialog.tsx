@@ -1,37 +1,69 @@
-// app/components/LoginDialog.tsx
 "use client";
 
-import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod"
+import z from "zod";
+import { useState } from "react";
+
+const loginSchema = z.object({
+  username: z.string().regex(/^[a-zA-Z0-9.]+$/, {
+    message: "Not a valid username!"
+  }),
+  password: z.string()
+})
+
+export type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginDialog() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const [error, setError] = useState(null);
 
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+    mode: "onBlur"
+  })
+
+  const onSubmit = async (data: LoginForm) => {
     const result = await signIn("credentials", {
-      email,
-      password,
+      email: `${data.username}@adisain.in`,
+      password: data.password,
       redirect: false,
     });
 
-    if (result?.error || !result?.ok) {
-      setError("Invalid credentials");
+    if (result?.error) {
+      console.log("Login failed: ", result.error);
+      setError(error);
     } else {
-      alert("Login successful");
+      console.log("Login success!");
     }
-  };
+  }
 
   return (
     <form
-      onSubmit={handleLogin}
+      onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex flex-col justify-end items-end w-1/2">
+
+      {/* Title and login error */}
+      <div className="w-[640px] px-[100px]">
+        <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full pb-10 pt-5">
+          <div className="flex flex-col items-center gap-1">
+            <h1 className="text-[28px] font-semibold">Welcome to Adisainin</h1>
+            <span className="text-[18px]">Enter your credentials to access your account.</span>
+          </div>
+          {error && (
+            <p>Email or password are incorrect</p>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col justify-end items-end w-[640px]">
 
         {/* Input username */}
         <div className="flex gap-4">
@@ -46,10 +78,9 @@ export default function LoginDialog() {
               <div className="flex text-[#8E8E8E] p-[15px] border-solid border-[1px] border-[#8E8E8E] bg-[#2F2F2F] rounded-md w-full">
                 <input
                   type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your username"
                   className="w-full flex placeholder-[#8E8E8E] focus:ring-0 focus:outline-0"
+                  {...register("username")}
                 />
                 <p>@adisain.in</p>
               </div>
@@ -57,9 +88,12 @@ export default function LoginDialog() {
           </div>
         </div>
 
-        {/* Spacing */}
+        {/* Spacing & username error */}
         <div className="w-[640px] px-[100px]">
           <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full h-4">
+            {errors.username && (
+              <p className="text-[#FF4D4D] text-xs px-1">{errors.username.message}</p>
+            )}
           </div>
         </div>
 
@@ -69,18 +103,20 @@ export default function LoginDialog() {
             <div className="flex text-[#8E8E8E] p-[15px] border-solid border-[1px] border-[#8E8E8E] bg-[#2F2F2F] rounded-md w-full">
               <input
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 className="placeholder-[#8E8E8E] focus:ring-0 focus:outline-0"
+                {...register("password")}
               />
             </div>
           </div>
         </div>
 
-        {/* Spacing */}
+        {/* Spacing & password error */}
         <div className="w-[640px] px-[100px]">
           <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full h-5">
+            {errors.password && (
+              <p className="text-[#FF4D4D] text-xs px-1">{errors.password.message}</p>
+            )}
           </div>
         </div>
 
@@ -118,9 +154,6 @@ export default function LoginDialog() {
             >Login</button>
           </div>
         </div>
-
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
       </div>
     </form>
   );

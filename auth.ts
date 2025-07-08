@@ -31,20 +31,26 @@ export const authConfig = {
 
           const { data } = response.data as LoginResponse;
 
-          const decodedToken = jwtDecode<TokenClaims>(data.accessToken.value);
+          const decodedAccessToken = jwtDecode<TokenClaims>(data.accessToken.value);
+          const decodedRefreshToken = jwtDecode<TokenClaims>(data.refreshToken.value);
+
 
           return {
-            id: decodedToken.userId,
-            email: decodedToken.email,
-            name: decodedToken.name,
+            id: decodedAccessToken.userId,
+            email: decodedAccessToken.email,
+            name: decodedAccessToken.name,
             token: {
               accessToken: {
-                claims: decodedToken,
+                claims: decodedAccessToken,
                 value: data.accessToken.value,
               },
+              refreshToken: {
+                claims: decodedRefreshToken,
+                value: data.refreshToken.value,
+              },
             },
-            roles: decodedToken.scope.split(" "),
-            userID: parseInt(decodedToken.userId),
+            roles: decodedAccessToken.scope.split(" "),
+            userID: parseInt(decodedAccessToken.userId),
           };
         } catch (err) {
           console.error("Login error in authorize():", err);
@@ -58,6 +64,7 @@ export const authConfig = {
     async jwt({ token, user }: { token: JWT; user: User }) {
       if (user) {
         token.accessToken = user.token.accessToken;
+        token.refreshToken = user.token.refreshToken;
         token.roles = user.roles;
         token.userID = user.userID;
       }
@@ -66,6 +73,7 @@ export const authConfig = {
 
     async session({ session, token }: { session: Session; token: JWT }) {
       session.accessToken = token.accessToken.value;
+      session.refreshToken = token.refreshToken.value;
       session.user = {
         ...session.user,
         roles: token.roles,

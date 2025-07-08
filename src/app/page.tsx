@@ -7,7 +7,13 @@ export default function Home() {
 
   const { data: session } = useSession();
 
-  if (!session) return <LoginPage />
+  if (!session) {
+    return (
+      <div className="flex w-screen h-screen items-center justify-center">
+        <LoginPage />
+      </div>
+    )
+  }
   return (
     <div>
       <h1>Welcome, {session.user.email}</h1>

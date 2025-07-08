@@ -4,7 +4,8 @@ import { JWT as DefaultJWT } from "next-auth/jwt"
 
 declare module "next-auth" {
   interface Session {
-    accessToken: string
+    accessToken: string,
+    refreshToken: string,
     error?: string,
     user: {
       id: string,
@@ -15,6 +16,10 @@ declare module "next-auth" {
 
   interface UserTokenDetails {
     accessToken: {
+      claims: TokenClaims
+      value: string
+    },
+    refreshToken: {
       claims: TokenClaims
       value: string
     }
@@ -28,7 +33,7 @@ declare module "next-auth" {
         claims: TokenClaims;
         value: string;
       };
-      refreshToken?: {
+      refreshToken: {
         claims: TokenClaims;
         value: string;
       };
@@ -43,7 +48,7 @@ declare module "next-auth/jwt" {
       claims: TokenClaims
       value: string
     },
-    refreshToken?: {
+    refreshToken: {
       claims: TokenClaims;
       value: string;
     },
