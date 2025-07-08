@@ -1,9 +1,17 @@
 "use client"
 
 import LoginPage from "./components/LoginDialog";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+
+  const { data: session } = useSession();
+
+  if (!session) return <LoginPage />
   return (
-    <LoginPage/>
+    <div>
+      <h1>Welcome, {session.user.email}</h1>
+      <pre>{JSON.stringify(session, null, 2)}</pre>
+    </div>
   );
 }

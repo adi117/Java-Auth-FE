@@ -21,10 +21,13 @@ export const authConfig = {
             password: string;
           };
 
-          const response = await axios.post("http://localhost:8080/api/v1/public/auth/login", {
-            email,
-            password,
-          });
+          const response = await axios.post(
+            "http://localhost:8080/api/v1/public/auth/login",
+            {
+              email,
+              password,
+            }
+          );
 
           const { data } = response.data as LoginResponse;
 
@@ -32,7 +35,8 @@ export const authConfig = {
 
           return {
             id: decodedToken.userId,
-            email: decodedToken.sub,
+            email: decodedToken.email,
+            name: decodedToken.name,
             token: {
               accessToken: {
                 claims: decodedToken,
@@ -51,7 +55,7 @@ export const authConfig = {
   ],
 
   callbacks: {
-    async jwt({ token, user }: {token: JWT, user: User}) {
+    async jwt({ token, user }: { token: JWT; user: User }) {
       if (user) {
         token.accessToken = user.token.accessToken;
         token.roles = user.roles;
@@ -60,21 +64,21 @@ export const authConfig = {
       return token;
     },
 
-    async session({ session, token }: {session: Session, token: JWT}) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       session.accessToken = token.accessToken.value;
       session.user = {
         ...session.user,
         roles: token.roles,
         id: token.accessToken.claims.userId,
       };
+
       return session;
     },
   },
 
-  secret: process.env.JWT_SECRET, // Make sure it's set in `.env.local`
+  secret: process.env.JWT_SECRET,
 };
 
-// Now export handlers for App Router API route
-const { handlers, auth } = NextAuth(authConfig);
+const handler = NextAuth(authConfig);
 
-export { handlers, auth };
+export { handler as GET, handler as POST };
