@@ -159,17 +159,28 @@ export default function LoginDialog() {
         </div>
 
         {/* Spacing */}
-        <div className="w-[640px] px-[100px]">
-          <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full h-fit">
-            <div className="flex w-full items-center gap-4 py-9">
-              <div className="bg-[#474747] h-[1px] w-full font-medium" />
-              <p>or</p>
-              <div className="bg-[#474747] h-[1px] w-full font-medium" />
+        <div className="flex">
+          <div className="w-[640px] px-[100px]">
+            <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full h-fit">
+              <div className="flex w-full items-center gap-4 py-9">
+                <div className="bg-[#474747] h-[1px] w-full font-medium" />
+                <p>or</p>
+                <div className="bg-[#474747] h-[1px] w-full font-medium" />
+              </div>
             </div>
           </div>
+          <div className="relative">
+            <div className="absolute -right-16 top-0 flex gap-1 items-center justify-center">
+              <div className="w-[18px] border-y-[1px] border-solid border-white flex items-center justify-center">
+                <div className="border-solid border-l-[1px] border-white h-24" />
+              </div>
+              <p>96pt</p>
+            </div>
+          </div>
+
         </div>
 
-        {/* Input password */}
+        {/* Login with Google */}
         <div className="border-y-[1px] border-solid border-[#8E8E8E] w-[640px] px-[100px]">
           <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full">
             <div className="flex text-[#8E8E8E] border-solid border-[1px] border-[#8E8E8E] bg-[#2F2F2F] rounded-md w-full overflow-hidden">
@@ -188,11 +199,11 @@ export default function LoginDialog() {
           </div>
         </div>
 
-        {/* Title and login error */}
+        {/* Sign up */}
         <div className="w-[640px] px-[100px]">
           <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full pb-5 pt-10 justify-center flex">
             <div className="flex items-center justify-center gap-1 text-base text-[#8E8E8E] w-full">
-              <span className="text-[18px]">Don't have an account?</span>
+              <span className="text-[18px]">Don&apos;t have an account?</span>
               <li className="font-light text-base text-[#1E90FF] list-none w-fit px-1"><a href="">Sign up</a></li>
             </div>
           </div>
