@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import z from "zod";
 import { useState } from "react";
+import Image from "next/image";
+import GoogleLogo from "@/public/google-logo.webp";
 
 const loginSchema = z.object({
   username: z.string().regex(/^[a-zA-Z0-9.]+$/, {
@@ -49,21 +51,20 @@ export default function LoginDialog() {
     <form
       onSubmit={handleSubmit(onSubmit)}
     >
-
-      {/* Title and login error */}
-      <div className="w-[640px] px-[100px]">
-        <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full pb-10 pt-5">
-          <div className="flex flex-col items-center gap-1">
-            <h1 className="text-[28px] font-semibold">Welcome to Adisainin</h1>
-            <span className="text-[18px]">Enter your credentials to access your account.</span>
-          </div>
-          {error && (
-            <p>Email or password are incorrect</p>
-          )}
-        </div>
-      </div>
-
       <div className="flex flex-col justify-end items-end w-[640px]">
+
+        {/* Title and login error */}
+        <div className="w-[640px] px-[100px]">
+          <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full pb-10 pt-5">
+            <div className="flex flex-col items-center gap-1">
+              <h1 className="text-[28px] font-semibold">Welcome to Adisainin</h1>
+              <span className="text-[18px]">Enter your credentials to access your account.</span>
+            </div>
+            {error && (
+              <p>Email or password are incorrect</p>
+            )}
+          </div>
+        </div>
 
         {/* Input username */}
         <div className="flex gap-4">
@@ -123,9 +124,11 @@ export default function LoginDialog() {
         {/* Remember username & forgot password */}
         <div className="flex gap-4">
           <div className="flex gap-1 items-center justify-center h-3">
-            <p>12pt</p>
+            <div className="h-3 items-center justify-center flex">
+              <p>12pt</p>
+            </div>
             <div className="w-[18px] border-y-[1px] border-solid border-white flex items-center justify-center">
-              <div className="border-solid border-l-[1px] border-white h-3" />
+              <div className="border-solid border-l-[1px] border-white h-[10px]" />
             </div>
           </div>
           <div className="border-y-[1px] border-solid border-[#8E8E8E] w-[640px] px-[100px]">
@@ -134,7 +137,7 @@ export default function LoginDialog() {
                 <Checkbox className="w-3 h-3 border-[#8E8E8E] bg-[#2F2F2F] rounded-[1px] data-[state=checked]:bg-[#2F2F2F] data-[state=checked]:border-[#8E8E8E] data-[state=checked]:text-white" />
                 <p className="font-light text-base">Remember me</p>
               </div>
-              <li className="font-light text-base text-[#0E8AF2] list-none w-fit px-1"><a href="">Forgot password?</a></li>
+              <li className="font-light text-base text-[#1E90FF] list-none w-fit px-1"><a href="">Forgot password?</a></li>
             </div>
           </div>
         </div>
@@ -150,8 +153,48 @@ export default function LoginDialog() {
           <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full">
             <button
               type="submit"
-              className="font-semibold text-xl text-white py-[15px] bg-[#0E8AF2] w-full rounded-md"
+              className="font-semibold text-xl text-white py-[15px] bg-[#1E90FF] w-full rounded-md hover:bg-[#187BD6]"
             >Login</button>
+          </div>
+        </div>
+
+        {/* Spacing */}
+        <div className="w-[640px] px-[100px]">
+          <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full h-fit">
+            <div className="flex w-full items-center gap-4 py-9">
+              <div className="bg-[#474747] h-[1px] w-full font-medium" />
+              <p>or</p>
+              <div className="bg-[#474747] h-[1px] w-full font-medium" />
+            </div>
+          </div>
+        </div>
+
+        {/* Input password */}
+        <div className="border-y-[1px] border-solid border-[#8E8E8E] w-[640px] px-[100px]">
+          <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full">
+            <div className="flex text-[#8E8E8E] border-solid border-[1px] border-[#8E8E8E] bg-[#2F2F2F] rounded-md w-full overflow-hidden">
+              <button
+                className="placeholder-[#8E8E8E] focus:ring-0 focus:outline-0 w-full p-[15px] hover:bg-[#1F1F1F] text-xl font-medium text-white flex items-center justify-center gap-3"
+              >
+                <Image
+                  src={GoogleLogo}
+                  alt="Google Logo"
+                  height={20}
+                  width={20}
+                />
+                <p>Login with Google</p>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Title and login error */}
+        <div className="w-[640px] px-[100px]">
+          <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full pb-5 pt-10 justify-center flex">
+            <div className="flex items-center justify-center gap-1 text-base text-[#8E8E8E] w-full">
+              <span className="text-[18px]">Don't have an account?</span>
+              <li className="font-light text-base text-[#1E90FF] list-none w-fit px-1"><a href="">Sign up</a></li>
+            </div>
           </div>
         </div>
       </div>
