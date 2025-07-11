@@ -7,9 +7,11 @@ import Image from "next/image";
 import GoogleLogo from "@/public/google-logo.webp";
 import { cn } from "@/lib/utils";
 import { registerUser } from "../services/userService";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 const registerSchema = z.object({
-  name: z.string().min(5, {message: "Minimum is 5 characters"}).regex(/^[a-zA-Z ]+$/, {message: "Name cannot contains number or symbols"}),
+  name: z.string().min(5, { message: "Minimum is 5 characters" }).regex(/^[a-zA-Z ]+$/, { message: "Name cannot contains number or symbols" }),
   username: z.string().regex(/^[a-zA-Z0-9.]+$/, {
     message: "Not a valid username!"
   }),
@@ -25,6 +27,8 @@ const registerSchema = z.object({
 export type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterDialog({ setMenu }: { setMenu: (val: string) => void }) {
+
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -62,12 +66,16 @@ export default function RegisterDialog({ setMenu }: { setMenu: (val: string) => 
   ]
 
   const onSubmit = async (data: RegisterForm) => {
+    // set loading to true to show loading
+    setLoading((val) => !val);
     try {
       const response = await registerUser({
         name: data.name,
         username: data.username,
         password: data.password
       })
+      // set loading to false if success to hit endpoint
+      setLoading((val) => !val);
       console.log(response);
     } catch (err) {
       console.error("failed to register", err);
@@ -177,13 +185,18 @@ export default function RegisterDialog({ setMenu }: { setMenu: (val: string) => 
           </div>
         </div>
 
-        {/* Login button */}
+        {/* Register button button */}
         <div className="border-y-[1px] border-solid border-[#8E8E8E] w-[640px] px-[100px]">
           <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full">
             <button
               type="submit"
-              className="font-semibold text-xl text-white py-[15px] bg-[#1E90FF] w-full rounded-md hover:bg-[#187BD6]"
-            >Register</button>
+              className="py-[15px] bg-[#1E90FF] w-full rounded-md hover:bg-[#187BD6]"
+            >
+              {loading
+              ? <Spinner size={"small"} className="text-white"/>
+              : <p className="font-semibold text-xl text-white">Register</p>
+              }
+            </button>
           </div>
         </div>
 

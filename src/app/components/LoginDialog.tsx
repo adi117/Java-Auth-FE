@@ -8,6 +8,7 @@ import z from "zod";
 import { useState } from "react";
 import Image from "next/image";
 import GoogleLogo from "@/public/google-logo.webp";
+import { Spinner } from "@/components/ui/spinner";
 
 const loginSchema = z.object({
   username: z.string().regex(/^[a-zA-Z0-9.]+$/, {
@@ -20,6 +21,7 @@ export type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginDialog({ setMenu }: { setMenu: (val: string) => void }) {
 
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const {
@@ -32,17 +34,23 @@ export default function LoginDialog({ setMenu }: { setMenu: (val: string) => voi
   })
 
   const onSubmit = async (data: LoginForm) => {
-    const result = await signIn("credentials", {
-      email: `${data.username}@adisain.in`,
-      password: data.password,
-      redirect: false,
-    });
-
-    if (result?.error) {
-      console.log("Login failed: ", result.error);
-      setError(error);
-    } else {
-      console.log("Login success!");
+    setLoading((val) => !val)
+    try {
+      const response = await signIn("credentials", {
+        email: `${data.username}@adisain.in`,
+        password: data.password,
+        redirect: false,
+      });
+      setLoading((val) => !val)
+      if (response?.error) {
+        console.log("Login failed: ", response.error);
+        setError(error);
+      } else {
+        console.log("Login success!");
+      }
+    } catch (err) {
+      console.error("failed to login", err);
+      
     }
   }
 
@@ -152,8 +160,13 @@ export default function LoginDialog({ setMenu }: { setMenu: (val: string) => voi
           <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full">
             <button
               type="submit"
-              className="font-semibold text-xl text-white py-[15px] bg-[#1E90FF] w-full rounded-md hover:bg-[#187BD6]"
-            >Login</button>
+              className="py-[15px] bg-[#1E90FF] w-full rounded-md hover:bg-[#187BD6]"
+            >
+              {loading
+              ? <Spinner size={"small"} className="text-white"/>
+              : <p className="font-semibold text-xl text-white">Login</p>
+              }
+            </button>
           </div>
         </div>
 
@@ -206,7 +219,7 @@ export default function LoginDialog({ setMenu }: { setMenu: (val: string) => voi
               <li
                 className="font-light text-base text-[#1E90FF] list-none w-fit px-1 hover:cursor-pointer"
                 onClick={() => setMenu("register")}
-                >Sign up</li>
+              >Sign up</li>
             </div>
           </div>
         </div>
