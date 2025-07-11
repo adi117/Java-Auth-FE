@@ -18,10 +18,9 @@ const loginSchema = z.object({
 
 export type LoginForm = z.infer<typeof loginSchema>;
 
-export default function LoginDialog() {
+export default function LoginDialog({ setMenu }: { setMenu: (val: string) => void }) {
 
   const [error, setError] = useState(null);
-
 
   const {
     register,
@@ -204,7 +203,10 @@ export default function LoginDialog() {
           <div className="border-x-[1px] border-solid border-[#8E8E8E] w-full pb-5 pt-10 justify-center flex">
             <div className="flex items-center justify-center gap-1 text-base text-[#8E8E8E] w-full">
               <span className="text-[18px]">Don&apos;t have an account?</span>
-              <li className="font-light text-base text-[#1E90FF] list-none w-fit px-1"><a href="">Sign up</a></li>
+              <li
+                className="font-light text-base text-[#1E90FF] list-none w-fit px-1 hover:cursor-pointer"
+                onClick={() => setMenu("register")}
+                >Sign up</li>
             </div>
           </div>
         </div>
