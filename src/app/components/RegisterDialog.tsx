@@ -69,14 +69,13 @@ export default function RegisterDialog({ setMenu }: { setMenu: (val: string) => 
     // set loading to true to show loading
     setLoading((val) => !val);
     try {
-      const response = await registerUser({
+      await registerUser({
         name: data.name,
-        username: data.username,
+        email: `${data.username}@adisain.in`, // make the username to email format
         password: data.password
       })
       // set loading to false if success to hit endpoint
       setLoading((val) => !val);
-      console.log(response);
     } catch (err) {
       console.error("failed to register", err);
     }
@@ -235,7 +234,7 @@ export default function RegisterDialog({ setMenu }: { setMenu: (val: string) => 
                   height={20}
                   width={20}
                 />
-                <p>Login with Google</p>
+                <p>Sign up with Google</p>
               </button>
             </div>
           </div>

@@ -37,7 +37,7 @@ export default function LoginDialog({ setMenu }: { setMenu: (val: string) => voi
     setLoading((val) => !val)
     try {
       const response = await signIn("credentials", {
-        email: `${data.username}@adisain.in`,
+        email: `${data.username}@adisain.in`, // make the username to email format
         password: data.password,
         redirect: false,
       });
@@ -50,7 +50,6 @@ export default function LoginDialog({ setMenu }: { setMenu: (val: string) => voi
       }
     } catch (err) {
       console.error("failed to login", err);
-      
     }
   }
 
